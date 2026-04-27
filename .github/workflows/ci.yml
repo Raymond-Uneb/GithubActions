@@ -2,21 +2,21 @@ name: CI Pipeline - Build and Test Spring Boot
 
 on:
   push:
-    branches: [main]
+    branches: [testes]
   pull_request:
-    branches: [main]
+    branches: [testes]
 
 env:
   JAVA_VERSION: '21'
   POSTGRES_VERSION: '18'
 
 jobs:
-  # Job principal: build e testes com PostgreSQL
+  # Job principal: a Build e Teste no ubuntu
   build:
-    name: 🔨 Build & Test
+    name:  Build & Test
     runs-on: ubuntu-latest
 
-    # Serviço do PostgreSQL para os testes de integração [citation:5]
+    # Serviço do PostgreSQL para os testes de integração
     services:
       postgres:
         image: postgres:${{ env.POSTGRES_VERSION }}
@@ -33,20 +33,20 @@ jobs:
           - 5432:5432
 
     steps:
-      # 1. Checkout do código
-      - name: 📥 Checkout code
+      # 1. Checkout do suposto código
+      - name:  Checkout code
         uses: actions/checkout@v4
 
       # 2. Configurar JDK
-      - name: ☕ Setup Java ${{ env.JAVA_VERSION }}
+      - name:  Setup Java ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'maven'
 
-      # 3. Cache do Maven (acelera builds futuros) [citation:5]
-      - name: 📦 Cache Maven dependencies
+      # 3. Cache do Maven (só pra acelerar mesmo, builds futuras)
+      - name:  Cache Maven dependencies
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
@@ -54,24 +54,24 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       # 4. Configurar variáveis de ambiente para o PostgreSQL
-      - name: 🔧 Configure PostgreSQL connection
+      - name:  Configure PostgreSQL connection
         run: |
           echo "SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/testdb" >> $GITHUB_ENV
           echo "SPRING_DATASOURCE_USERNAME=testuser" >> $GITHUB_ENV
           echo "SPRING_DATASOURCE_PASSWORD=testpass" >> $GITHUB_ENV
 
-      # 5. Rodar testes (inclui integração com PostgreSQL) [citation:4]
-      - name: 🧪 Run tests
+      # 5. Rodar testes (inclui suposta integração com PostgreSQL)
+      - name:  Run tests
         run: mvn clean test
         env:
           SPRING_PROFILES_ACTIVE: test
 
-      # 6. Build do projeto (gera o JAR) [citation:9]
-      - name: 🏗️ Build Spring Boot JAR
+      # 6. Build do projeto (gera o suopsto JAR)
+      - name:  Build Spring Boot JAR
         run: mvn clean package -DskipTests
 
-      # 7. Upload do JAR como artifact [citation:2][citation:6]
-      - name: 📤 Upload JAR artifact
+      # 7. Upload do JAR como artifact, eu acho...
+      - name:  Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: spring-boot-app-jar
@@ -79,8 +79,8 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
-      # 8. Upload dos resultados dos testes (facilita debug) [citation:2]
-      - name: 📊 Upload test results
+      # 8. Upload dos resultados dos testes (era pra facilita debug né..)
+      - name:  Upload test results
         uses: actions/upload-artifact@v4
         if: always()  # Upload mesmo se os testes falharem
         with:
